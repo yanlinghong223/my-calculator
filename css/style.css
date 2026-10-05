@@ -1,0 +1,188 @@
+/* =========================================================
+   简易计算器 样式（种子）
+   配色移植自 Python 桌面版 demo（customtkinter 深色主题）。
+   已就绪：显示区、键盘容器（4 列网格）、按键样式类（预留）。
+   ========================================================= */
+
+/* ---------- 全局 ---------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #1a1d24;            /* 页面背景 */
+  --panel: #222733;         /* 计算器面板 */
+  --display-bg: #2b303e;    /* 显示区背景 */
+  --display-text: #f5f6fa;  /* 主屏文字 */
+  --text-sub: #8a90a0;      /* 副屏/次要文字 */
+
+  /* 按键配色（对应 Python 版 view.py 的 colors 表） */
+  --key-normal: #576574;    /* 数字键 */
+  --key-action: #54a0ff;    /* 运算符键 */
+  --key-danger: #ff6b6b;    /* CLEAR 键 */
+  --key-success: #1dd1a1;   /* 等号键 */
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg);
+  font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+}
+
+/* ---------- 计算器面板 ---------- */
+.calculator {
+  width: 340px;
+  padding: 20px;
+  background: var(--panel);
+  /* 连续曲率圆角（squircle）：Chrome 139+ 生效，其余浏览器退化为普通圆角（#120） */
+  border-radius: 30px;
+  corner-shape: squircle;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+}
+
+/* ---------- 显示区（种子已就绪） ---------- */
+.display__main {
+  height: 60px;
+  padding: 0 12px;
+  font-size: 32px;
+  font-weight: bold;
+  line-height: 60px;
+  color: var(--display-text);
+  background: var(--display-bg);
+  border: 2px solid #3a4152;
+  /* 与面板同一套曲率语言，层级递减（#120） */
+  border-radius: 16px;
+  corner-shape: squircle;
+  text-align: right;
+  overflow-x: auto;      /* 内容过长时横向滚动 */
+  white-space: nowrap;
+  /* 只隐藏滚动条外观，滚动能力保留（#123） */
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* 旧 Edge / IE */
+}
+
+/* Chromium / Safari：把滚动条画成 0 尺寸（#123） */
+.display__main::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.display__sub {
+  min-height: 18px;
+  padding: 4px 6px 0;
+  font-size: 12px;
+  color: var(--text-sub);
+  text-align: right;
+}
+
+/* ---------- 键盘容器（种子已就绪：4 列网格，内部为空） ---------- */
+.keyboard {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+/* ---------- 按键样式（预留：等按键 PR 来使用） ---------- */
+.key {
+  height: 52px;
+  border: none;
+  /* 与面板同一套曲率语言，层级递减（#120） */
+  border-radius: 18px;
+  corner-shape: squircle;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  /* 按下反馈用 transform 实现：纯视觉，不参与布局、不会挤动其它键（#121） */
+  transition: transform .12s ease, filter .15s;
+}
+.key:hover  { filter: brightness(1.15); }
+.key:active { transform: scale(.94); filter: brightness(.9); }
+
+/* 尊重系统的「减少动态效果」偏好：不做缩放，只保留亮度反馈 */
+@media (prefers-reduced-motion: reduce) {
+  .key { transition: none; }
+  .key:active { transform: none; }
+}
+
+.key--normal  { background: var(--key-normal); }   /* 数字键 */
+.key--action  { background: var(--key-action); }   /* 运算符键 */
+.key--danger  { background: var(--key-danger); }   /* CLEAR 键 */
+.key--success { background: var(--key-success); }  /* 等号键 */
+
+.key--wide { grid-column: span 2; }  /* 占两列（如 0 键，对应 Python 版 colspan=2） */
+/* =========================================
+   历史记录面板样式
+   ========================================= */
+.history-panel {
+    margin-top: 20px;
+    border-top: 1px solid #444;
+    padding-top: 10px;
+}
+
+.history-panel h3 {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #fff;
+}
+
+#history-list {
+    max-height: 200px; /* 超过 200px 就出现滚动条 */
+    overflow-y: auto;  /* 允许上下滑动 */
+    padding: 0;
+    list-style: none;
+    font-size: 14px;
+    color: #ddd;
+    margin: 0;
+}
+
+#history-list li {
+    padding: 4px 0;
+    border-bottom: 1px solid #333;
+}
+
+/* ---------- 历史记录增强：标题栏 / 可点击条目 / 空态 / 清空按钮 ---------- */
+.history-panel__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-panel__head h3 {
+    margin-bottom: 0;
+}
+
+.history-clear {
+    border: none;
+    background: none;
+    padding: 0;
+    color: var(--key-action);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.history-clear:hover {
+    text-decoration: underline;
+}
+
+#history-list li.history-item {
+    padding: 4px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background .15s;
+}
+
+#history-list li.history-item:hover {
+    background: rgba(84, 160, 255, .15);
+}
+
+#history-list li.history-empty {
+    padding: 6px 0;
+    border-bottom: none;
+    color: var(--text-sub);
+    text-align: center;
+}
